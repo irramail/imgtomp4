@@ -1,9 +1,8 @@
 extern crate redis;
 
-use redis::{Client, Commands, Connection, RedisResult};
+use redis::{Commands};
 use jsonrpc_http_server::jsonrpc_core::{IoHandler, Value, Params, Error};
 use jsonrpc_http_server::{ServerBuilder};
-use std::time::{SystemTime};
 
 fn parse_arguments (p: Params) -> Result<Vec<String>, Error> {
   let mut result = Vec::new();

@@ -34,6 +34,13 @@ fn fetch_svg(svg: &str) -> redis::RedisResult<isize> {
   con.get("svg")
 }
 
+fn get_filenames() -> redis::RedisResult<String> {
+  let client = redis::Client::open("redis://127.0.0.1/")?;
+  let mut con = client.get_connection()?;
+
+  con.get("mp4Filenames")
+}
+
 fn main() {
   let mut io = IoHandler::new();
 
@@ -42,6 +49,11 @@ fn main() {
     let _ = fetch_svg( &w[0]);
 
     Ok(Value::String("".to_string()))
+  });
+
+  io.add_method("get_files",  | _params | {
+    let filenames = get_filenames().unwrap();
+    Ok(Value::String(filenames))
   });
 
   let server = ServerBuilder::new(io)

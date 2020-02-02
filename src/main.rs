@@ -38,7 +38,23 @@ fn get_filenames() -> redis::RedisResult<String> {
   let client = redis::Client::open("redis://127.0.0.1/")?;
   let mut con = client.get_connection()?;
 
-  con.get("mp4Filenames")
+  con.get("mp4AllFilenames")
+}
+
+fn get_new_filenames() -> redis::RedisResult<String> {
+  let client = redis::Client::open("redis://127.0.0.1/")?;
+  let mut con = client.get_connection()?;
+
+  con.get("mp4NewFilenames")
+}
+
+fn set_zero() -> redis::RedisResult<isize> {
+  let client = redis::Client::open("redis://127.0.0.1/")?;
+  let mut con = client.get_connection()?;
+
+  let _ : () = con.set("mp4NewFilenames", "")?;
+
+  con.get("mp4NewFilenames")
 }
 
 fn main() {
@@ -53,6 +69,13 @@ fn main() {
 
   io.add_method("get_files",  | _params | {
     let filenames = get_filenames().unwrap();
+    Ok(Value::String(filenames))
+  });
+
+  io.add_method("get_new_files",  | _params | {
+    let filenames = get_new_filenames().unwrap();
+    let _ = set_zero();
+
     Ok(Value::String(filenames))
   });
 

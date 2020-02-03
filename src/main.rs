@@ -62,7 +62,9 @@ fn delete_by_name(name: &str)  -> redis::RedisResult<String> {
   let mut con = client.get_connection()?;
   let filenames: String = con.get("mp4AllFilenames").unwrap();
 
-  let _ : () = con.set("mp4AllFilenames", filenames.replace(name, "").replace(",,", ","))?;
+  let comma_name = format!(",{}",name).to_string();
+
+  let _ : () = con.set("mp4AllFilenames", filenames.replace(&comma_name, ""))?;
 
   let _ : () = con.set("mp4NewFilenames", "")?;
   con.get("mp4AllFilenames")

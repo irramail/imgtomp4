@@ -57,6 +57,17 @@ fn set_zero() -> redis::RedisResult<isize> {
   con.get("mp4NewFilenames")
 }
 
+fn delete_by_name(name: &str)  -> redis::RedisResult<String> {
+  let client = redis::Client::open("redis://127.0.0.1/")?;
+  let mut con = client.get_connection()?;
+  let filenames: String = con.get("mp4AllFilenames").unwrap();
+
+  let _ : () = con.set("mp4AllFilenames", filenames.replace(name, "").replace(",,", ","))?;
+
+  let _ : () = con.set("mp4NewFilenames", "")?;
+  con.get("mp4AllFilenames")
+}
+
 fn main() {
   let mut io = IoHandler::new();
 
@@ -77,6 +88,13 @@ fn main() {
     let _ = set_zero();
 
     Ok(Value::String(filenames))
+  });
+
+  io.add_method("delete",  move |params: Params| {
+    let w = parse_arguments(params)?;
+    let _ = delete_by_name(&w[0]);
+
+    Ok(Value::String("".to_string()))
   });
 
   let server = ServerBuilder::new(io)

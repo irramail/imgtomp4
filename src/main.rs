@@ -83,6 +83,15 @@ fn delete_by_name(name: &str)  -> redis::RedisResult<String> {
   con.get("mp4AllFilenames")
 }
 
+fn set_text(text: &str) -> redis::RedisResult<isize> {
+  let client = redis::Client::open("redis://127.0.0.1/")?;
+  let mut con = client.get_connection()?;
+
+  let _ : () = con.set("text", text)?;
+
+  con.get("text")
+}
+
 fn main() {
   let mut io = IoHandler::new();
 
@@ -115,6 +124,13 @@ fn main() {
   io.add_method("delete",  move |params: Params| {
     let w = parse_arguments(params)?;
     let _ = delete_by_name(&w[0]);
+
+    Ok(Value::String("".to_string()))
+  });
+
+  io.add_method("set_text",  move |params: Params| {
+    let w = parse_arguments(params)?;
+    let _ = set_text(&w[0]);
 
     Ok(Value::String("".to_string()))
   });

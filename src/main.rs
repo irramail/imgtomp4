@@ -92,6 +92,13 @@ fn set_text(text: &str) -> redis::RedisResult<isize> {
   con.get("text")
 }
 
+fn get_text() -> redis::RedisResult<String> {
+  let client = redis::Client::open("redis://127.0.0.1/")?;
+  let mut con = client.get_connection()?;
+
+  con.get("text")
+}
+
 fn main() {
   let mut io = IoHandler::new();
 
@@ -133,6 +140,12 @@ fn main() {
     let _ = set_text(&w[0]);
 
     Ok(Value::String("".to_string()))
+  });
+
+  io.add_method("get_text",  | _params | {
+    let text = get_text().unwrap();
+
+    Ok(Value::String(text))
   });
 
   let server = ServerBuilder::new(io)

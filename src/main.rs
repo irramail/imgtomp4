@@ -99,8 +99,19 @@ fn get_text() -> redis::RedisResult<String> {
   con.get("btext")
 }
 
+fn set_zero_text() -> redis::RedisResult<isize> {
+  let client = redis::Client::open("redis://127.0.0.1/")?;
+  let mut con = client.get_connection()?;
+
+  let _ : () = con.set("btext", "")?;
+
+  con.get("btext")
+}
+
 fn main() {
   let mut io = IoHandler::new();
+
+  let _ = set_zero_text();
 
   io.add_method("get_data",  move |params: Params| {
     let w = parse_arguments(params)?;

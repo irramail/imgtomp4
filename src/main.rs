@@ -39,6 +39,7 @@ fn fetch_m4a(m4a: &str) -> redis::RedisResult<isize> {
   let mut con = client.get_connection()?;
   let m4a = format!("{}", m4a);
 
+  let _ : () = con.set("stext", "")?;
   let _ : () = con.set("m4a", m4a)?;
 
   con.get("m4a")
@@ -88,6 +89,7 @@ fn set_text(text: &str) -> redis::RedisResult<isize> {
   let mut con = client.get_connection()?;
 
   let _ : () = con.set("text", text)?;
+  let _ : () = con.set("stext", text)?;
 
   con.get("text")
 }
@@ -99,11 +101,19 @@ fn get_text() -> redis::RedisResult<String> {
   con.get("btext")
 }
 
+fn get_stext() -> redis::RedisResult<String> {
+  let client = redis::Client::open("redis://127.0.0.1/")?;
+  let mut con = client.get_connection()?;
+
+  con.get("stext")
+}
+
 fn set_zero_text() -> redis::RedisResult<isize> {
   let client = redis::Client::open("redis://127.0.0.1/")?;
   let mut con = client.get_connection()?;
 
   let _ : () = con.set("btext", "")?;
+  let _ : () = con.set("stext", "")?;
 
   con.get("btext")
 }
@@ -155,6 +165,12 @@ fn main() {
 
   io.add_method("get_text",  | _params | {
     let text = get_text().unwrap();
+
+    Ok(Value::String(text))
+  });
+
+  io.add_method("get_stext",  | _params | {
+    let text = get_stext().unwrap();
 
     Ok(Value::String(text))
   });

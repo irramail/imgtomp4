@@ -39,7 +39,7 @@ fn fetch_m4a(m4a: &str) -> redis::RedisResult<isize> {
   let mut con = client.get_connection()?;
   let m4a = format!("{}", m4a);
 
-  let _ : () = con.set("stext", "")?;
+  //let _ : () = con.set("stext", "")?;
   let _ : () = con.set("m4a", m4a)?;
 
   con.get("m4a")

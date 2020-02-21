@@ -114,8 +114,28 @@ fn set_zero_text() -> redis::RedisResult<isize> {
 
   let _ : () = con.set("btext", "")?;
   let _ : () = con.set("stext", "")?;
+  let _ : () = con.set("sec", "4")?;
+  let _ : () = con.set("voice", "Samantha")?;
 
   con.get("btext")
+}
+
+fn set_sec(sec: &str) -> redis::RedisResult<isize> {
+  let client = redis::Client::open("redis://127.0.0.1/")?;
+  let mut con = client.get_connection()?;
+
+  let _ : () = con.set("sec", sec)?;
+
+  con.get("sec")
+}
+
+fn set_voice(voice: &str) -> redis::RedisResult<isize> {
+  let client = redis::Client::open("redis://127.0.0.1/")?;
+  let mut con = client.get_connection()?;
+
+  let _ : () = con.set("voice", voice)?;
+
+  con.get("voice")
 }
 
 fn main() {
@@ -173,6 +193,20 @@ fn main() {
     let text = get_stext().unwrap();
 
     Ok(Value::String(text))
+  });
+
+  io.add_method("set_sec",  move |params: Params| {
+    let secs = parse_arguments(params)?;
+    let _ = set_sec(&secs[0]);
+
+    Ok(Value::String("".to_string()))
+  });
+
+  io.add_method("set_voice",  move |params: Params| {
+    let voices = parse_arguments(params)?;
+    let _ = set_voice(&voices[0]);
+
+    Ok(Value::String("".to_string()))
   });
 
   let server = ServerBuilder::new(io)

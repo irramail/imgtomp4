@@ -138,6 +138,20 @@ fn set_voice(voice: &str) -> redis::RedisResult<isize> {
   con.get("voice")
 }
 
+fn get_sec() -> redis::RedisResult<String> {
+  let client = redis::Client::open("redis://127.0.0.1/")?;
+  let mut con = client.get_connection()?;
+
+  con.get("sec")
+}
+
+fn get_voice() -> redis::RedisResult<String> {
+  let client = redis::Client::open("redis://127.0.0.1/")?;
+  let mut con = client.get_connection()?;
+
+  con.get("voice")
+}
+
 fn main() {
   let mut io = IoHandler::new();
 
@@ -207,6 +221,18 @@ fn main() {
     let _ = set_voice(&voices[0]);
 
     Ok(Value::String("".to_string()))
+  });
+
+  io.add_method("get_sec",  | _params | {
+    let sec = get_sec().unwrap();
+
+    Ok(Value::String(sec))
+  });
+
+  io.add_method("get_voice",  | _params | {
+    let voice = get_voice().unwrap();
+
+    Ok(Value::String(voice))
   });
 
   let server = ServerBuilder::new(io)

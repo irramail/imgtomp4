@@ -117,6 +117,7 @@ fn set_zero_text() -> redis::RedisResult<isize> {
   let _ : () = con.set("sec", "0.25")?;
   let _ : () = con.set("voice", "Samantha")?;
   let _ : () = con.set("color", "000000")?;
+  let _ : () = con.set("ypercent", "10")?;
 
   con.get("btext")
 }
@@ -148,6 +149,15 @@ fn set_color(color: &str) -> redis::RedisResult<isize> {
   con.get("color")
 }
 
+fn set_ypercent(ypercent: &str) -> redis::RedisResult<isize> {
+  let client = redis::Client::open("redis://127.0.0.1/")?;
+  let mut con = client.get_connection()?;
+
+  let _ : () = con.set("ypercent", ypercent)?;
+
+  con.get("ypercent")
+}
+
 fn get_sec() -> redis::RedisResult<String> {
   let client = redis::Client::open("redis://127.0.0.1/")?;
   let mut con = client.get_connection()?;
@@ -167,6 +177,13 @@ fn get_color() -> redis::RedisResult<String> {
   let mut con = client.get_connection()?;
 
   con.get("color")
+}
+
+fn get_ypercent() -> redis::RedisResult<String> {
+  let client = redis::Client::open("redis://127.0.0.1/")?;
+  let mut con = client.get_connection()?;
+
+  con.get("ypercent")
 }
 
 fn main() {
@@ -247,6 +264,13 @@ fn main() {
     Ok(Value::String("".to_string()))
   });
 
+  io.add_method("set_ypercent",  move |params: Params| {
+    let ypercent = parse_arguments(params)?;
+    let _ = set_ypercent(&ypercent[0]);
+
+    Ok(Value::String("".to_string()))
+  });
+
   io.add_method("get_sec",  | _params | {
     let sec = get_sec().unwrap();
 
@@ -263,6 +287,12 @@ fn main() {
     let color = get_color().unwrap();
 
     Ok(Value::String(color))
+  });
+
+  io.add_method("get_ypercent",  | _params | {
+    let ypercent = get_ypercent().unwrap();
+
+    Ok(Value::String(ypercent))
   });
 
   let server = ServerBuilder::new(io)

@@ -138,6 +138,15 @@ fn set_voice(voice: &str) -> redis::RedisResult<isize> {
   con.get("voice")
 }
 
+fn set_color(color: &str) -> redis::RedisResult<isize> {
+  let client = redis::Client::open("redis://127.0.0.1/")?;
+  let mut con = client.get_connection()?;
+
+  let _ : () = con.set("color", color)?;
+
+  con.get("color")
+}
+
 fn get_sec() -> redis::RedisResult<String> {
   let client = redis::Client::open("redis://127.0.0.1/")?;
   let mut con = client.get_connection()?;
@@ -150,6 +159,13 @@ fn get_voice() -> redis::RedisResult<String> {
   let mut con = client.get_connection()?;
 
   con.get("voice")
+}
+
+fn get_color() -> redis::RedisResult<String> {
+  let client = redis::Client::open("redis://127.0.0.1/")?;
+  let mut con = client.get_connection()?;
+
+  con.get("color")
 }
 
 fn main() {
@@ -223,6 +239,13 @@ fn main() {
     Ok(Value::String("".to_string()))
   });
 
+  io.add_method("set_color",  move |params: Params| {
+    let color = parse_arguments(params)?;
+    let _ = set_color(&color[0]);
+
+    Ok(Value::String("".to_string()))
+  });
+
   io.add_method("get_sec",  | _params | {
     let sec = get_sec().unwrap();
 
@@ -233,6 +256,12 @@ fn main() {
     let voice = get_voice().unwrap();
 
     Ok(Value::String(voice))
+  });
+
+  io.add_method("get_color",  | _params | {
+    let color = get_color().unwrap();
+
+    Ok(Value::String(color))
   });
 
   let server = ServerBuilder::new(io)

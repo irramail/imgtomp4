@@ -158,6 +158,15 @@ fn set_ypercent(ypercent: &str) -> redis::RedisResult<isize> {
   con.get("ypercent")
 }
 
+fn set_bgcounter(bgcounter: &str) -> redis::RedisResult<isize> {
+  let client = redis::Client::open("redis://127.0.0.1/")?;
+  let mut con = client.get_connection()?;
+
+  let _ : () = con.set("bgcounter", bgcounter)?;
+
+  con.get("bgcounter")
+}
+
 fn get_sec() -> redis::RedisResult<String> {
   let client = redis::Client::open("redis://127.0.0.1/")?;
   let mut con = client.get_connection()?;
@@ -267,6 +276,13 @@ fn main() {
   io.add_method("set_ypercent",  move |params: Params| {
     let ypercent = parse_arguments(params)?;
     let _ = set_ypercent(&ypercent[0]);
+
+    Ok(Value::String("".to_string()))
+  });
+
+  io.add_method("set_bgcounter",  move |params: Params| {
+    let bgcounter = parse_arguments(params)?;
+    let _ = set_bgcounter(&bgcounter[0]);
 
     Ok(Value::String("".to_string()))
   });

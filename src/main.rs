@@ -119,6 +119,7 @@ fn set_zero_text() -> redis::RedisResult<isize> {
   let _ : () = con.set("voice", "Samantha")?;
   let _ : () = con.set("color", "000000")?;
   let _ : () = con.set("ypercent", "10")?;
+  let _ : () = con.set("backupSvg", "")?;
 
   con.get("btext")
 }

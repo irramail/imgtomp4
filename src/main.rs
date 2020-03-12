@@ -29,7 +29,8 @@ fn fetch_svg(svg: &str) -> redis::RedisResult<isize> {
   let mut con = client.get_connection()?;
   let svg = format!("{}", svg);
 
-  let _ : () = con.set("svg", svg)?;
+  let _ : () = con.set("svg", svg.clone())?;
+  let _ : () = con.set("backupSvg", svg)?;
 
   con.get("svg")
 }

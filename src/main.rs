@@ -168,6 +168,17 @@ fn set_bgcounter(bgcounter: &str) -> redis::RedisResult<isize> {
   con.get("bgcounter")
 }
 
+fn set_repeat() -> redis::RedisResult<isize> {
+  let client = redis::Client::open("redis://127.0.0.1/")?;
+  let mut con = client.get_connection()?;
+
+  let old_svg : String = con.get("backupSvg").unwrap();
+
+  let _ : () = con.set("svg", &old_svg)?;
+
+  con.get("svg")
+}
+
 fn get_sec() -> redis::RedisResult<String> {
   let client = redis::Client::open("redis://127.0.0.1/")?;
   let mut con = client.get_connection()?;
@@ -284,6 +295,12 @@ fn main() {
   io.add_method("set_bgcounter",  move |params: Params| {
     let bgcounter = parse_arguments(params)?;
     let _ = set_bgcounter(&bgcounter[0]);
+
+    Ok(Value::String("".to_string()))
+  });
+
+  io.add_method("set_repeat", | _params | {
+    let _ = set_repeat();
 
     Ok(Value::String("".to_string()))
   });

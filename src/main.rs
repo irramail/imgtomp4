@@ -35,6 +35,16 @@ fn fetch_svg(svg: &str) -> redis::RedisResult<isize> {
   con.get("svg")
 }
 
+fn fetch_img(img: &str) -> redis::RedisResult<isize> {
+  let client = redis::Client::open("redis://127.0.0.1/")?;
+  let mut con = client.get_connection()?;
+  let img = format!("{}", img);
+
+  let _ : () = con.set("img", img)?;
+
+  con.get("img")
+}
+
 fn fetch_m4a(m4a: &str) -> redis::RedisResult<isize> {
   let client = redis::Client::open("redis://127.0.0.1/")?;
   let mut con = client.get_connection()?;
@@ -216,6 +226,13 @@ fn main() {
   io.add_method("get_data",  move |params: Params| {
     let w = parse_arguments(params)?;
     let _ = fetch_svg( &w[0]);
+
+    Ok(Value::String("".to_string()))
+  });
+
+  io.add_method("set_img",  move |params: Params| {
+    let w = parse_arguments(params)?;
+    let _ = fetch_img( &w[0]);
 
     Ok(Value::String("".to_string()))
   });

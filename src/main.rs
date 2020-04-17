@@ -143,6 +143,15 @@ fn set_sec(sec: &str) -> redis::RedisResult<isize> {
   con.get("sec")
 }
 
+fn set_times(times: &str) -> redis::RedisResult<isize> {
+  let client = redis::Client::open("redis://127.0.0.1/")?;
+  let mut con = client.get_connection()?;
+
+  let _ : () = con.set("times", times)?;
+
+  con.get("times")
+}
+
 fn set_voice(voice: &str) -> redis::RedisResult<isize> {
   let client = redis::Client::open("redis://127.0.0.1/")?;
   let mut con = client.get_connection()?;
@@ -285,6 +294,13 @@ fn main() {
   io.add_method("set_sec",  move |params: Params| {
     let secs = parse_arguments(params)?;
     let _ = set_sec(&secs[0]);
+
+    Ok(Value::String("".to_string()))
+  });
+
+  io.add_method("set_times",  move |params: Params| {
+    let times = parse_arguments(params)?;
+    let _ = set_times(&times[0]);
 
     Ok(Value::String("".to_string()))
   });
